@@ -43,17 +43,26 @@ class InputList
   end
 
 
-  def disable_pointer(virtual_pointer)
+  def disable_pointers(virtual_pointer)
     load_attached
     p = @attached.select {|d| d.name.include? virtual_pointer.name }
     p[0].disable unless p.empty?
+
+    p = @attached.select {|d| d.name.include? virtual_pointer.name_abs }
+    p[0].disable unless p.empty?
+
   end
 
   
-  def enable_pointer(virtual_pointer)
+  def enable_pointers(virtual_pointer)
     load_detached
     p = @detached.select {|d| d.name.include? virtual_pointer.name }
     p[0].enable unless p.empty?
+
+    p = @detached.select {|d| d.name.include? virtual_pointer.name_abs }
+    p[0].enable unless p.empty?
+
+
   end
 
   def enable(id)
