@@ -61,18 +61,31 @@ class InputList
 
     p = @detached.select {|d| d.name.include? virtual_pointer.name_abs }
     p[0].enable unless p.empty?
-
-
   end
 
   def enable(id)
     Xinput.inputs[display_to_int(@display)][id].enable
   end
-  
+
   def disable(id)
     Xinput.inputs[display_to_int(@display)][id].disable
   end
 
+  def enable_name(name)
+    p = @detached.select {|d| d.name.include? virtual_pointer.name_abs }
+    p[0].enable unless p.empty?
+  end
+
+  def get_inputs(name)
+    p = @inputs.select {|d| d.name.include? name }
+    return p
+  end
+
+  def disable_name(id)
+    Xinput.inputs[display_to_int(@display)][id].disable
+  end
+
+  
 end
 
 

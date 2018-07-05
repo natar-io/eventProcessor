@@ -13,6 +13,8 @@ class XServer
   end
 
   def build
+    # Xorg -noreset +extension GLX +extension RANDR +extension RENDER -logfile ./10.log -configdir /home/ditrop/dummy -config ./xorg.conf :99
+    
     @process = ChildProcess.build("Xorg", "-noreset", "+extension", "GLX","+extension", "RANDR",  "+extension", "RENDER",
                             "-logfile", "./#{id.to_s}.log", "-configdir", "dummy", "-config", "./xorg.conf", "#{display}")
 

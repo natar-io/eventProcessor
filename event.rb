@@ -25,6 +25,7 @@
 
 
 require "redis"
+require 'json'
 
 require_relative 'xinput'
 require_relative 'xserver'
@@ -37,7 +38,7 @@ require_relative 'pointer'
 
 
 # Display 
-display = ":10"
+display = ":99"
 
 ## Create X server
 server = XServer.new(display)
@@ -54,45 +55,115 @@ pointer = VirtualPointer.new(display)
 device = pointer.create_devices
 
 ## Attach new pointer
-il.enable_pointer(pointer)
+il.enable_pointers(pointer)
 
 ## Detach from main X server
-# @main_input.disable_pointer(pointer)
+@main_input.disable_pointers(pointer)
+
+## disable main mouse ?
+## enable sub-mouse ?
 
 ## move it...
 pointer.move(10, 10)
-pointer.move(20, 20)
-
+pointer.move(20, 20
 ## Move to absolute location.
-pointer.press_abs(150, 50)
+pointer.press_abs(460, 535)
 sleep(0.2)
-pointer.move_abs(252, 55)
+pointer.move_abs(460, 535)
 sleep(0.2)
 pointer.release_abs
 sleep(0.2)
+# "Logitech M325"
 
+@main_input = InputList.new(@main_display)
+@main_input.load_all
+#@main_input.get_inputs("Logitech")[0].disable
+# @main_input.get_inputs("Logitech")[0].enable
+        
+## Enable the keyboard 
+il.get_inputs("SIGMACHIP USB Keyboard").each { |i| i.enable } 
+
+## enable mouse 
+il.get_inputs("Logitech M325").each { |i| i.enable } 
 
 ## WIP
+
 redis = Redis.new
 
+last_x = 0
+last_y = 0
 # redis.subscribe_with_timeout(5, "evt:10:mouse:x") do |on|
+
+
 t = Thread.new do 
-  redis.subscribe("evt:10") do |on|
+  redis.subscribe("evt:99") do |on|
     on.message do |channel, message|
-      puts "channel" + channel  +  " message " + message
-      # ...
+      
+      m = JSON.parse(message)
+      
+      if m["name"] == "captureMouse"
+        if(m["pressed"])
+          il.get_inputs("Logitech").each { |i| i.enable }
+          puts "capture mouse"
+        else
+          il.get_inputs("Logitech").each { |i| i.disable }
+          puts "release mouse"
+        end
+      end
+      
+      if m["name"] == "captureKeyboard"
+        if(m["pressed"])
+          il.get_inputs("SIGMACHIP USB Keyboard").each { |i| i.enable }
+          puts "capture keyboard"
+        else
+          il.get_inputs("SIGMACHIP USB Keyboard").each { |i| i.disable }
+          puts "release keyboard"
+        end
+      end
+      
     end
   end
 end
-## ...
 
 t.kill
+# if m["name"] == "mouseEvent"
+      #   pressed = m["pressed"]
+
+      #   unless pressed.nil?
+      #     if pressed
+      #     #            pointer.press_abs(last_x,last_y)
+      #       pointer.press_left(true)
+      #     else 
+      #       pointer.press_left(false)
+      #     end
+      #   end
+        
+      #   x = m["x"] 
+      #   y = m["y"]
+
+      #   unless x.nil? or y.nil?
+      #     # pointer.move(x
+      #     pointer.move(x,y)
+      #     last_x = x
+      #     last_y = y
+      #   end
+
+        #       pointer.press_left(pressed)
+#        puts "Pointer evt: " + x.to_s + " " + y.to_s + " " + pressed.to_s
+
+#      puts m.to_s
+#      puts m[:name]
+#      puts "channel" + channel  +  " message " + message
+      # ...
+## ...
+
 
 ## Clear the pointer 
 pointer.delete
 
 # serv = XServer.new 10 
 # p = serv.build
+
 # p.start
 
 # il = InputList.new(":10")

@@ -60,6 +60,18 @@ class VirtualPointer
     @device.destroy
   end
 
+  def press_left(press)
+
+    v = press ? 0 : 1
+    @device.send_event(:EV_KEY, :BTN_LEFT, v)
+    @device.send_event(:EV_SYN, :SYN_REPORT)
+  end
+  def press_right(press)
+    v = press ? 0 : 1
+    @device.send_event(:EV_KEY, :BTN_RIGHT, v)
+    @device.send_event(:EV_SYN, :SYN_REPORT)
+  end
+  
   def move(x,y)
     @device.send_event(:EV_REL, :REL_X, x)
     @device.send_event(:EV_REL, :REL_Y, y)
