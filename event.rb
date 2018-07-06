@@ -75,6 +75,9 @@ pointer.release_abs
 sleep(0.2)
 # "Logitech M325"
 
+## DISPLAY=:99 xrandr -s 800x600
+## DISPLAY=:99 setxkbmap fr bepo
+
 @main_input = InputList.new(@main_display)
 @main_input.load_all
 #@main_input.get_inputs("Logitech")[0].disable
